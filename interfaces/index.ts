@@ -3,7 +3,7 @@ export type QuestionType = {
     imageUrl?: string;
     question: string;
     options?: string[];
-    answer?: number | number[];
+    answer: number;
     time?: number;
 }
 
