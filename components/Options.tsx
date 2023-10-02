@@ -3,34 +3,19 @@ import { useEffect, useState } from "react";
 interface OptionProps {
     options: string[] | undefined;
     answer: number | undefined;
-    scoreCallback: (score: number) => void; // handles score change
-    selectedCallback: (selected: number) => void; // handles question change
+    selected: number | undefined;
+    setSelected: (index: number|undefined) => void;
 }
 
 const Options: React.FC<OptionProps> = (props) => {
 
-    const [selected, setSelected] = useState<number | undefined>(undefined);
-
-    const handleAnswer = (index: number) => {
-        handleSelected(index);
-        if (index === props.answer) {
-            props.scoreCallback(1);
-        } else {
-            // if answer is wrong or time is up, score is 0
-            props.scoreCallback(0);
-        }
-    }
+    const {selected, setSelected} = props;
 
     // handles the selected option, emits the selected option to parent
     const handleSelected = (index: number) => {
         setSelected(index);
-        props.selectedCallback(index);
     }
 
-    // resets the selected option when the question changes
-    useEffect(() => {
-        setSelected(undefined);
-    }, [props.answer]);
 
     return (
         <div className="flex flex-col items-center justify-between w-full">
@@ -55,7 +40,7 @@ const Options: React.FC<OptionProps> = (props) => {
                                             ""
                                         }
                                         `}
-                            onClick={() => handleAnswer(index)}
+                            onClick={() => handleSelected(index)}
                             disabled={selected !== undefined}
                             >
                             <span className="text-lg font-semibold">

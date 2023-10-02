@@ -30,13 +30,19 @@ const Timer: React.FC<TimerProps> = (props) => {
     }
   }, [remainingTime]);
 
- 
+  const color = `rgb(${255 - remainingTime * 15}, 165, 0)`;
+
   return (
+    
     <div className="flex flex-row items-center justify-between w-full">
-      <span className="text-lg font-semibold">
-        {remainingTime}
-      </span>
-    </div> 
+      <div className="h-20 w-20 rounded-full backdrop-blur-md flex justify-center items-center animate-ping transform scale-50 opacity-100"
+        style={{ backgroundColor: color }}
+      >
+        <span className="text-lg font-semibold">
+          {remainingTime}
+        </span>
+      </div>
+    </div>
   );
 };
 

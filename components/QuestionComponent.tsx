@@ -1,79 +1,123 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, useRef, MutableRefObject } from "react";
 import { Question } from "@/interfaces";
 import Options from "@/components/Options";
 import Timer from "@/components/Timer";
+import RotateLoader from "react-spinners/RotateLoader";
 
 interface QuestionProps {
     allQuestions: Question[];
-    totalQuestions: number;
-    endQuizCallback: (bool: boolean) => void;
+    totalQuestions: MutableRefObject<number>;
+    totalScore: number;
+    setTotalScore: (score: number) => void;
+    quizStatus: boolean | null;
+    setQuizStatus: (status: boolean) => void;
 }
 
 const QuestionComponent: React.FC<QuestionProps> = (props) => {
 
-    const questionsQueue: Question[] = props.allQuestions;
+
+    const questionsQueue: Question[] = useRef([...props.allQuestions]).current;
 
     const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null)
-    const [totalScore, setTotalScore] = useState<number>(0);
-    const [timerKey, setTimerKey] = useState<number>(0);    
+    const {totalScore, setTotalScore} = props;
+    const [timerKey, setTimerKey] = useState<number>(0);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [selected, setSelected] = useState<number | undefined>(undefined);
 
-    const handleScore = (score: number) => {
-        setTotalScore(totalScore + score)
-    }
-
-    const handleQuestion = () => {
-        // time-out to show the correct answer
-        setTimeout(() => {
-        if (questionsQueue.length >= 0) {
-            const question = questionsQueue.shift()
-            console.log(questionsQueue.length)
-            setCurrentQuestion(question || null)
-            setTimerKey((key) => key + 1)
-        } else {
-            props.endQuizCallback(true)
+    const loadNextQuestion = () => {
+      setTimeout(() => {
+        if (questionsQueue.length !== 0) {
+            // dequeue the next question
+            const nextQuestion = questionsQueue.shift() || null;
+            setCurrentQuestion(nextQuestion);
+            setIsLoading(true);
+            setTimerKey(timerKey + 1);
+            setIsLoading(false);
         }
-        }, 2000)
-    }
+        else {
+            console.log(totalScore, 'total score in break')
+            // props.endQuizCallback(false, totalScore);
+            props.setQuizStatus(false);
+        }
+    }, 2000);
+  }
 
+    const handleAnswer = (selectedOption: number) => {
+        if (selectedOption === currentQuestion?.data.answer) {
+            setTotalScore(totalScore + 1);
+        }
+        loadNextQuestion();
+    }
+    
+    const handleQuestion = (selectedOption?: number) => {
+        // set time out to show the correct answer
+        if (selectedOption !== undefined) {
+            handleAnswer(selectedOption);
+        }
+    }
     // runs once, when the component is rendered
     useEffect(() => {
-        handleQuestion()
-    }, [])        
+      loadNextQuestion();      
+    }, [])
+    
+    // runs everytime an option is selected
+    useEffect(() => {
+      handleQuestion(selected)
+    }, [selected])
+
+    useEffect(() => {
+      setSelected(undefined);
+    }, [currentQuestion])
 
     return (
         <div className="flex flex-col h-screen">
-          <div
-            className="flex-1 bg-cover bg-center p-4 flex items-center justify-between"
-            style={{ backgroundImage: `url(${currentQuestion?.data.imageUrl})` }}
-          >
-            <div className="text-lg font-semibold text-white">
-              {totalScore} / {props.totalQuestions}
+          {isLoading ? (
+            <div className="flex-1 bg-cover bg-center p-12 flex items-center justify-center">
+              <RotateLoader color={"#DE28B7"} loading={isLoading} size={30} margin={30} />
             </div>
-            <div className="text-white">
-              {currentQuestion && (
-                <Timer
-                  resetkey={timerKey}
-                  timer={currentQuestion?.data.time || 0}
-                  timerCallBack={() => {handleQuestion()}}
-                />
-              )}
-            </div>
-          </div>
-          <div className="flex-1 p-4">
-            <span className="text-xl font-semibold">
-              {currentQuestion?.data.question}
-            </span>
-            <div className="mt-4">
-              <Options
-                options={currentQuestion?.data.options}
-                answer={currentQuestion?.data.answer}
-                scoreCallback={handleScore}
-                selectedCallback={() => handleQuestion()}
-              />
-            </div>
-          </div>
+          ) : (
+            <>
+              <div
+                className="flex-1 bg-cover bg-center p-12 flex items-center justify-between"
+                style={{ backgroundImage: `url(${currentQuestion?.data.imageUrl})` }}
+              >
+                <div className="flex flex-col text-lg font-semibold text-black backdrop-blur-md bg-white bg-opacity-10 rounded-full p-4">
+                    <span className="text-lg font-semibold">
+                      Score: {totalScore}
+                    </span>
+                    <span className="text-lg font-semibold">
+                      Question: {props.totalQuestions.current - questionsQueue.length} / {props.totalQuestions.current}
+                    </span>
+                </div>
+                <div>
+                  {currentQuestion && (
+                    <Timer
+                      resetkey={timerKey}
+                      timer={currentQuestion?.data.time || 10}
+                      timerCallBack={() => {
+                        loadNextQuestion();
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="flex-1 p-4">
+                <span className="text-xl font-semibold">
+                  {currentQuestion?.data.question}
+                </span>
+                <div className="mt-4">
+                  <Options
+                    options={currentQuestion?.data.options}
+                    answer={currentQuestion?.data.answer}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       );
-    };
-
+}
+      
 export default QuestionComponent;
