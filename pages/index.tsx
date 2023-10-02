@@ -42,7 +42,7 @@ const Home: React.FC<HomeProps> = ({ questionnaire }: HomeProps) => {
       {quizStatus === null && (
         <Welcome setQuizStatus={setQuizStatus} />
       )}
-      {quizStatus ? (
+      {quizStatus == true && (
         <QuestionComponent
           allQuestions={questionsQueue}
           totalQuestions={questionnaireLength}
@@ -52,7 +52,8 @@ const Home: React.FC<HomeProps> = ({ questionnaire }: HomeProps) => {
           setQuizStatus={setQuizStatus}
 
         />
-      ) : (
+      )}
+      {quizStatus == false && (
         <QuizEnd
           totalScore={totalScore}
           setTotalScore={setTotalScore}
