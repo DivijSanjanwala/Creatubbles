@@ -1,7 +1,3 @@
-// Type Declaration for the QuestionType Object
-import crypto from 'crypto';
-
-
 export type QuestionType = {
     imageUrl?: string;
     question: string;
@@ -10,21 +6,14 @@ export type QuestionType = {
     time?: number;
 }
 
-
 export class Question {
-    constructor(public id: string, public data: QuestionType) {
-        this.data = data;
-        this.id = this.generateHashID(data.question);
-    }
 
-    private generateHashID(question: string): string {
-        const hash = crypto.createHash('sha256');
-        hash.update(question);
-        return hash.digest('hex');
+    constructor(public id: string, public data: QuestionType) {
+        this.id = this.id
+        this.data = data;
     }
 
 }
-
 
 export class Questionnaire {
     constructor(
@@ -33,13 +22,12 @@ export class Questionnaire {
         this.data = data;
     }
 
+    public getQuestionByIndex(index: number): Question | undefined {
+        return this.data[index];
+    }
+
     public getQuestionByID(id: string): Question | undefined {
         return this.data.find((question) => question.id === id);
     }
 
-    public getQuestionByIndex(index: number): Question | undefined {
-        return this.data[index];
-    }
 }
-
-

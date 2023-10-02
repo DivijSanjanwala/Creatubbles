@@ -24,6 +24,7 @@ const QuestionComponent: React.FC<QuestionProps> = (props) => {
   const [selected, setSelected] = useState<number | undefined>(undefined);
 
   const loadNextQuestion = () => {
+
     setTimeout(() => {
       if (questionsQueue.length !== 0) {
           // dequeue the next question
@@ -36,7 +37,7 @@ const QuestionComponent: React.FC<QuestionProps> = (props) => {
       else {
           props.setQuizStatus(false);
         }
-    }, 2000);
+    }, 1000);
   }
 
   const handleAnswer = (selectedOption: number) => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef} from 'react'
 import './globals.css'
-import { fetchQuestionnaireData } from '@/lib/api'
+import { fetchRequestAPI } from '@/lib/api'
 import { Question } from '@/interfaces'
 import QuestionComponent from '@/components/QuestionComponent'
 import Welcome from '@/components/Welcome'
@@ -8,7 +8,7 @@ import QuizEnd from '@/components/QuizEnd'
 import { GetServerSidePropsContext } from 'next'
 
 export async function getServerSideProps(context: GetServerSidePropsContext): Promise<{ props: HomeProps }> {
-  const questionnaire = await fetchQuestionnaireData();
+  const questionnaire = await fetchRequestAPI();
   return {
     props: {
       questionnaire,

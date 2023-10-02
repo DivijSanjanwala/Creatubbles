@@ -1,9 +1,16 @@
-import { QuestionType, Question, Questionnaire } from '../interfaces/index';
+import { QuestionType, Question } from '../interfaces/index';
+import crypto from 'crypto';
+
 
 // ! for now as it's never null
 const API_URL: string = process.env.API_URL_DEV!;
 
-async function fetchRequestAPI() {
+const generateID = (question: string): string => {
+    // Generate SHA-1 hash and convert to hexadecimal
+    return crypto.createHash('sha1').update(question).digest('hex');
+}
+
+export async function fetchRequestAPI() {
     const headers = {
         'Accept': 'application/json'
     };
@@ -22,19 +29,10 @@ async function fetchRequestAPI() {
 
     // cast each json into Question
     json.forEach((question: QuestionType, index: number) => {
-        json[index] = new Question(index.toString(), question);
+        json[index] = new Question(generateID(question.question), question);
     });
 
-    return json   
-}
-
-
-
-export async function fetchQuestionnaireData(): Promise<Question[]> {
-    const data = await fetchRequestAPI();
-    const questionnaire = new Questionnaire(data);
-
-    return questionnaire.data.map((question) => {
+    return json.map((question: Question) => {
         return {
             id: question.id,
             data: question.data
