@@ -1,4 +1,7 @@
 // Type Declaration for the QuestionType Object
+import crypto from 'crypto';
+
+
 export type QuestionType = {
     imageUrl?: string;
     question: string;
@@ -11,8 +14,15 @@ export type QuestionType = {
 export class Question {
     constructor(public id: string, public data: QuestionType) {
         this.data = data;
-        this.id = this.id;
+        this.id = this.generateHashID(data.question);
     }
+
+    private generateHashID(question: string): string {
+        const hash = crypto.createHash('sha256');
+        hash.update(question);
+        return hash.digest('hex');
+    }
+
 }
 
 

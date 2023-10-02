@@ -38,7 +38,7 @@ const Home: React.FC<HomeProps> = ({ questionnaire }: HomeProps) => {
 
 
   return (
-    <main className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl font-mono">
+    <main className="max-w-md mx-auto bg-white shadow-md overflow-hidden md:max-w-2xl font-mono">
       {quizStatus === null && (
         <Welcome setQuizStatus={setQuizStatus} />
       )}
