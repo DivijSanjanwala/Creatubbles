@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 interface WelcomeProps {
   setQuizStatus: (status: boolean) => void;
 }

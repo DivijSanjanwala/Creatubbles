@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 interface OptionProps {
     options: string[] | undefined;
     answer: number | undefined;

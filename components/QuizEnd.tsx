@@ -1,6 +1,3 @@
-import { useState } from "react";
-
-
 interface QuizEndProps {
     totalScore: number;
     setTotalScore: (score: number) => void;
