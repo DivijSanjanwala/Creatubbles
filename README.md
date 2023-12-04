@@ -1,4 +1,4 @@
-# Creatubbles
+# SuperQuizApp
 
 Simple quiz web app, called "SuperQuizApp". 
 
